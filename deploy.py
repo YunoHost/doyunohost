@@ -146,6 +146,7 @@ if snapshot and image_id == 308287:
     print(' Snapshot created: YunoHost')
 
 postinst_command_list = [
+    'killall tahoe',
     'rm -rf /home/yunohost.backup/tahoe',
     'apt-get install --reinstall yunohost-config-tahoe'
 ]
