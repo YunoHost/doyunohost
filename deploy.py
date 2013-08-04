@@ -11,12 +11,12 @@ region_id = 4       # NYC 2
 image_id = 308287   # Debian 7.0 x64
 
 if len(sys.argv) == 1:
-    print('Usage: deploy.py --client-id <my_client_id> --api_key <my_api_key> --domain <mydomain.nohost.me> [--password <my_password>] [--ssh-key-auth] [--no-snapshot] [--test]')
+    print('Usage: deploy.py --client-id <my_client_id> --api_key <my_api_key> --domain <mydomain.nohost.me> [--password <my_password>] [--no-ssh-key-auth] [--no-snapshot] [--test]')
     sys.exit(1)
 
 api_url = 'https://api.digitalocean.com'
 test = '--test' in sys.argv
-ssh_key_auth = '--ssh-key-auth' in sys.argv
+ssh_key_auth = '--no-ssh-key-auth' not in sys.argv
 snapshot = '--no-snapshot' not in sys.argv
 
 if '--domain' not in sys.argv:
