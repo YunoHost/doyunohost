@@ -1,4 +1,5 @@
-**YunoHost deployment script at Digital Ocean**
+Deployment Script
+-----------------
 
 Prerequisites
 -------------
