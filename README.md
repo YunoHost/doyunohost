@@ -1,9 +1,18 @@
-YunoHost deployment script for Digital Ocean
---------------------------------------------
+**YunoHost deployment script at Digital Ocean**
+
+Prerequisites
+-------------
+
+* A Digital Ocean account
+* Some credits owned
+* An SSH key configured and added to Digital Ocean (highly recommended)
+* An API key ( https://www.digitalocean.com/api_access )
+
+
+Usage
+-----
 
 ```bash
-Usage:
-
 deploy.py --client-id <my_client_id>     # DO client ID
           --api_key <my_api_key>         # DO API key
           --domain <mydomain.nohost.me>  # Domain name
