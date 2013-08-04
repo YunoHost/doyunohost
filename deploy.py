@@ -109,7 +109,7 @@ if image_id == 308287:
 
     print('Installing YunoHost on your droplet, it WILL take a while')
     for command in command_list:
-        command_result = os.system('ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "root@'+ ip +'" "export TERM=linux; '+ command +' 2>&1 >/dev/null" 2>&1 >/dev/null')
+        command_result = os.system('ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "root@'+ ip +'" "export TERM=linux; '+ command +'"')
         #if command_result != 0:
             #print('Error during setup')
             #sys.exit(1)
@@ -140,6 +140,7 @@ if snapshot and image_id == 308287:
         r = requests.get(api_url +'/droplets/'+ droplet, params=credentials)
         result = r.json()
         if result['droplet']['status'] == 'active':
+            time.sleep(20)
             break
 
     print(' Snapshot created: YunoHost')
@@ -153,7 +154,7 @@ if postinstall:
     postinst_command_list.append('yunohost tools postinstall --domain '+ domain +' --password '+ password)
 
 for command in postinst_command_list:
-    command_result = os.system('ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "root@'+ ip +'" "export TERM=linux; '+ command +' 2>&1 >/dev/null" 2>&1 >/dev/null')
+    command_result = os.system('ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "root@'+ ip +'" "export TERM=linux; '+ command +'"')
     #if command_result != 0:
         #print('Error during setup')
         #sys.exit(1)
