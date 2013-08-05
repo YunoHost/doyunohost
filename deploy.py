@@ -145,7 +145,7 @@ if snapshot and image_id == 308287:
 
     print(' Snapshot created: YunoHost')
 
-postinst_command_list = []
+postinst_command_list = ['hostname yunohost.yunohost.org']
 
 if postinstall:
     postinst_command_list.append('yunohost tools postinstall --domain '+ domain +' --password '+ password)
