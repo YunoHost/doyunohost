@@ -18,6 +18,7 @@ api_url = 'https://api.digitalocean.com'
 test = '--test' in sys.argv
 ssh_key_auth = '--no-ssh-key-auth' not in sys.argv
 snapshot = '--no-snapshot' not in sys.argv
+postinstall = False
 
 if '--domain' not in sys.argv:
     print('You have to provide a domain name')
