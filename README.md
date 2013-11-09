@@ -4,6 +4,7 @@ Deployment Script
 Prerequisites
 -------------
 
+* python-requests (Debian or Ubuntu apt-get install python-requests)
 * A Digital Ocean account
 * Some credits owned
 * An SSH key configured and added to Digital Ocean (highly recommended)
