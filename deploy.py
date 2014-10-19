@@ -54,18 +54,21 @@ if snapshot or update_snapshot:
     params['filter'] = 'my_images'
     print('Getting snapshots...')
     r = requests.get(api_url +'/images', params=params)
+    snapshot_name = 'YunoHost'
+    if test:
+        snapshot_name = 'YunoHostest'
     result = r.json()
     for image in result['images']:
-        if image['name'] == 'YunoHost':
-            print('Snapshot found: YunoHost')
+        if image['name'] == snapshot_name:
+            print('Snapshot found: '+ snapshot_name)
             if update_snapshot:
                 r = requests.get(api_url +'/images/'+ str(image['id']) + '/destroy', params=params)
                 result = r.json()
                 if result['status'] == 'ERROR':
-                    print('Failed to remove "YunoHost" snapshot')
+                    print('Failed to remove "'+ snapshot_name +'" snapshot')
                     sys.exit(1)
                 else:
-                    print('Snapshot removed: YunoHost')
+                    print('Snapshot removed: '+ snapshot_name)
             else:
                 image_id = image['id']
 
@@ -80,7 +83,7 @@ if ssh_key_name:
         for key in result['ssh_keys']:
             if key['name'] == ssh_key_name:
                 params['ssh_key_ids'] = key['id']
-        if params['ssh_key_ids'] is None:
+        if 'ssh_key_ids' not in params:
             print('SSH key not found: '+ ssh_key_name)
             sys.exit(1)
     else:
@@ -156,6 +159,8 @@ if snapshot and image_id == 6372526:
     print(' Droplet off')
     params = credentials
     params['name'] = 'YunoHost'
+    if test:
+        params['name'] = 'YunoHostest'
     sys.stdout.write('Snapshooting your droplet, it may take a while...')
     sys.stdout.flush()
     requests.get(api_url +'/droplets/'+ droplet +'/snapshot', params=params)
