@@ -6,7 +6,27 @@ import os
 import requests
 
 if len(sys.argv) == 1:
-    print('Usage: remove.py --client-id <my_client_id> --api-key <my_api_key> --domain <mydomain.nohost.me>')
+    print(
+'''
+Deployment Script
+-----------------
+
+Prerequisites
+-------------
+
+* A Digital Ocean account
+* Some credits owned
+* An SSH key configured and added to Digital Ocean (highly recommended)
+* An API key and Client ID for APIv1 ( https://cloud.digitalocean.com/api_access )
+
+
+Usage
+-----
+
+remove.py --client-id <my_client_id>     # DO client ID
+          --api-key <my_api_key>         # DO API key
+          --domain <mydomain.nohost.me>  # Domain name (used as droplet name)
+''')
     sys.exit(1)
 
 api_url = 'https://api.digitalocean.com/v1'
