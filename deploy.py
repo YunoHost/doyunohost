@@ -6,9 +6,11 @@ import os
 import requests
 import time
 
-size_id = 66         # 512MB RAM
-region_id = 9        # AMS 3
-image_id = 6372526   # Debian 7.0 x64
+image_id_Debian_7_0_x64 = 6372526
+
+size_id = 66                         # 512MB RAM
+region_id = 9                        # AMS 3
+image_id = image_id_Debian_7_0_x64   # Debian 7.0 x64
 
 if len(sys.argv) == 1:
     print(
@@ -147,7 +149,7 @@ while True:
 print(' Droplet IP: '+ ip)
 os.system('ssh-keygen -R '+ ip)
 
-if image_id == 6372526:
+if image_id == image_id_Debian_7_0_x64:
     command_list = [
             'echo "root:M3ryOPF.AfR2E" | chpasswd -e', # Change root password to "yunohost"
             'git clone http://github.com/YunoHost/install_script /root/install_script'
@@ -166,7 +168,7 @@ if image_id == 6372526:
             print('Result: '+ str(command_result))
             #sys.exit(1)
 
-if snapshot and image_id == 6372526:
+if snapshot and image_id == image_id_Debian_7_0_x64:
     sys.stdout.write('Shutting your droplet down, it may take a while...')
     sys.stdout.flush()
     requests.get(api_url +'/droplets/'+ droplet +'/power_off', params=credentials)
