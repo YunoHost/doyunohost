@@ -22,7 +22,6 @@ deploy.py --client-id <my_client_id>     # DO client ID
           [--test]                       # Install from test repository
           [--no-snapshot]                # Do not snapshot after installation nor recover from snapshot
           [--update-snapshot]            # Force fresh install and snapshot
-          [--system-upgrade]             # Force system upgrade before YunoHost installation
 ```
 
 ```bash

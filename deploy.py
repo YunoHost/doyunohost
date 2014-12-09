@@ -36,7 +36,6 @@ deploy.py --client-id <my_client_id>     # DO client ID
           [--test]                       # Install from test repository
           [--no-snapshot]                # Do not snapshot after installation nor recover from snapshot
           [--update-snapshot]            # Force fresh install and snapshot
-          [--system-upgrade]             # Force system upgrade before YunoHost installation
 ''')
     sys.exit(1)
 
@@ -44,7 +43,6 @@ api_url = 'https://api.digitalocean.com/v1'
 test = '--test' in sys.argv
 snapshot = '--no-snapshot' not in sys.argv
 update_snapshot = '--update-snapshot' in sys.argv
-system_upgrade = '--system-upgrade' in sys.argv
 postinstall = False
 
 if '--domain' not in sys.argv:
@@ -154,8 +152,7 @@ if image_id == 6372526:
             'echo "root:M3ryOPF.AfR2E" | chpasswd -e', # Change root password to "yunohost"
             'git clone http://github.com/YunoHost/install_script /root/install_script'
     ]
-    if system_upgrade:
-        command_list.append('apt-get update && apt-get upgrade -qq -y')
+    command_list.append('apt-get update && apt-get upgrade -qq -y')
     if test:
         command_list.append('cd /root/install_script && ./autoinstall_yunohostv2 test')
     else:
@@ -205,6 +202,7 @@ if snapshot and image_id == 6372526:
 postinst_command_list = []
 
 if postinstall:
+    postinst_command_list.append('apt-get update && apt-get upgrade -qq -y')
     postinst_command_list.append('yunohost tools postinstall --domain '+ domain +' --password '+ password)
 
 for command in postinst_command_list:
