@@ -7,7 +7,7 @@ Prerequisites
 * A Digital Ocean account
 * Some credits owned
 * An SSH key configured and added to Digital Ocean (highly recommended)
-* An API key and Client ID for APIv1 ( https://www.digitalocean.com/api_access )
+* An API key and Client ID for APIv1 ( https://cloud.digitalocean.com/api_access )
 
 
 Usage
