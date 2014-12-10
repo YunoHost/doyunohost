@@ -5,6 +5,7 @@ import sys
 import os
 import requests
 import time
+import json
 
 image_id_Debian_7_0_x64 = 6372526
 
@@ -30,14 +31,19 @@ Prerequisites
 Usage
 -----
 
-deploy.py --client-id <my_client_id>     # DO client ID
-          --api-key <my_api_key>         # DO API key
-          --domain <mydomain.nohost.me>  # Domain name (used as droplet name)
+deploy.py --domain <mydomain.nohost.me>  # Domain name (used as droplet name)
+          [--client-id <my_client_id>]   # DO client ID
+          [--api-key <my_api_key>]       # DO API key
           [--ssh-key-name <ssh_key>]     # Use SSH key based authentication, with the specific key
           [--password <my_password>]     # Admin password (auto-execute post-installation if set)
           [--test]                       # Install from test repository
           [--no-snapshot]                # Do not snapshot after installation nor recover from snapshot
           [--update-snapshot]            # Force fresh install and snapshot
+
+You have to provide your client ID and corresponding API key :
+- either on the command line
+- either in a 'config.local' file located next to this script (see 'config.local.sample' for a sample)
+
 ''')
     sys.exit(1)
 
@@ -50,13 +56,21 @@ postinstall = False
 if '--domain' not in sys.argv:
     print('You have to provide a domain name')
     sys.exit(1)
-if '--client-id' not in sys.argv:
-    print('You have to provide a client ID')
-    sys.exit(1)
-if '--api-key' not in sys.argv:
-    print('You have to provide an API key')
-    sys.exit(1)
 
+credentials  = {}
+
+# Try to load credentials from config.local file
+localconfig = os.path.join(os.path.dirname(__file__), 'config.local')
+if os.path.exists( localconfig ):
+  with open(localconfig) as localconfig_stream:
+    credentials.update( json.loads(str(localconfig_stream.read())) )
+    if 'client_id' not in credentials or 'api_key' not in credentials:
+      print('%s malformed' % (localconfig))
+      sys.exit(1)
+    else:
+      print( 'Successfully loaded credentials from %s' % (localconfig) )
+
+# Parse command line arguments
 for key, arg in enumerate(sys.argv):
     if arg == '--domain':
         domain = sys.argv[key+1]
@@ -64,13 +78,15 @@ for key, arg in enumerate(sys.argv):
         postinstall = True
         password = sys.argv[key+1]
     if arg == '--api-key':
-        api_key = sys.argv[key+1]
+        credentials.update( { "api_key" : sys.argv[key+1] } )
     if arg == '--client-id':
-        client_id = sys.argv[key+1]
+        credentials.update( { "client_id" : sys.argv[key+1] } )
     if arg == '--ssh-key-name':
         ssh_key_name = sys.argv[key+1]
 
-credentials = { 'client_id': client_id, 'api_key': api_key }
+if 'client_id' not in credentials or 'api_key' not in credentials:
+  print('You have to provide a client ID and an API key')
+  sys.exit(1)
 
 start = time.time()
 
@@ -204,14 +220,15 @@ if snapshot and image_id == image_id_Debian_7_0_x64:
 postinst_command_list = []
 
 if postinstall:
+    print(' Proceeding with YunoHost postinstall...')
+    
     postinst_command_list.append('apt-get update && apt-get upgrade -qq -y')
     postinst_command_list.append('yunohost tools postinstall --domain '+ domain +' --password '+ password)
 
-for command in postinst_command_list:
-    command_result = os.system('ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "root@'+ ip +'" "export TERM=linux; '+ command +'"')
-    if command_result != 0:
-        print('Error during postinst command: ' + command)
-
+    for command in postinst_command_list:
+        command_result = os.system('ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "root@'+ ip +'" "export TERM=linux; '+ command +'"')
+        if command_result != 0:
+            print('Error during postinst command: ' + command)
 
 print('')
 print('Successfully installed in '+ str(time.time() - start) +' s')
