@@ -59,16 +59,23 @@ if '--domain' not in sys.argv:
 
 credentials  = {}
 
-# Try to load credentials from config.local file
+# Try to load credentials & ssh-key from config.local file
 localconfig = os.path.join(os.path.dirname(__file__), 'config.local')
 if os.path.exists( localconfig ):
   with open(localconfig) as localconfig_stream:
-    credentials.update( json.loads(str(localconfig_stream.read())) )
-    if 'client_id' not in credentials or 'api_key' not in credentials:
+    config = {}
+    config.update( json.loads(str(localconfig_stream.read())) )
+    if 'client_id' not in config or 'api_key' not in config:
       print('%s malformed' % (localconfig))
       sys.exit(1)
-    else:
-      print( 'Successfully loaded credentials from %s' % (localconfig) )
+
+    credentials["client_id"] = config["client_id"]
+    credentials["api_key"] = config["api_key"]
+    print( 'Successfully loaded credentials from %s' % (localconfig) )
+    
+    if 'ssh_key' in credentials:
+      ssh_key_name = credentials["ssh_key"]
+      print( 'Successfully loaded SSH key %s from %s' % (ssh_key_name, localconfig) )
 
 # Parse command line arguments
 for key, arg in enumerate(sys.argv):
