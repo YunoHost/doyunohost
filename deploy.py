@@ -73,8 +73,8 @@ if os.path.exists( localconfig ):
     credentials["api_key"] = config["api_key"]
     print( 'Successfully loaded credentials from %s' % (localconfig) )
     
-    if 'ssh_key' in credentials:
-      ssh_key_name = credentials["ssh_key"]
+    if 'ssh_key' in config:
+      ssh_key_name = config["ssh_key"]
       print( 'Successfully loaded SSH key %s from %s' % (ssh_key_name, localconfig) )
 
 # Parse command line arguments
