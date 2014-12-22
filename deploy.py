@@ -170,7 +170,9 @@ while True:
         break
 
 print(' Droplet IP: '+ ip)
-os.system('ssh-keygen -R '+ ip)
+
+if os.path.exists( os.path.join(os.environ['HOME'], ".ssh", "known_hosts") ):
+  os.system('ssh-keygen -R '+ ip)
 
 if image_id == image_id_Debian_7_0_x64:
     command_list = [
