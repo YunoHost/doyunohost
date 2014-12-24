@@ -167,6 +167,9 @@ while True:
     if result['droplet']['status'] == 'active':
         ip = result['droplet']['ip_address']
         time.sleep(20)
+        if "ssh_key_ids" in params:
+            # wait another 30 sec
+            time.sleep(30)
         break
 
 print(' Droplet IP: '+ ip)
