@@ -1,0 +1,6 @@
+{
+  "client_id" : "your_client_id_goes_here",
+  "api_key" : "your_api_key_goes_here",
+  "ssh_key" : "your_ssh_key_name_goes_here",
+  "dynette_auth" : "login:password"
+}
