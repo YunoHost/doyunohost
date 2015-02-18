@@ -39,6 +39,7 @@ deploy.py --domain <mydomain.nohost.me>  # Domain name (used as droplet name)
           [--test]                       # Install from test repository
           [--no-snapshot]                # Do not snapshot after installation nor recover from snapshot
           [--update-snapshot]            # Force fresh install and snapshot
+          [--branch <stable|testing|unstable>] # Which Yunohost flavor to install (default : stable)
 
 You have to provide your client ID and corresponding API key :
 - either on the command line
@@ -52,6 +53,7 @@ test = '--test' in sys.argv
 snapshot = '--no-snapshot' not in sys.argv
 update_snapshot = '--update-snapshot' in sys.argv
 postinstall = False
+branch = 'stable'
 
 if '--domain' not in sys.argv:
     print('You have to provide a domain name')
@@ -90,6 +92,8 @@ for key, arg in enumerate(sys.argv):
         credentials.update( { "client_id" : sys.argv[key+1] } )
     if arg == '--ssh-key-name':
         ssh_key_name = sys.argv[key+1]
+    if arg == '--branch':
+        branch = sys.argv[key+1]
 
 if 'client_id' not in credentials or 'api_key' not in credentials:
   print('You have to provide a client ID and an API key')
@@ -104,9 +108,10 @@ if snapshot or update_snapshot:
     print('Getting snapshots...')
     r = requests.get(api_url +'/images', params=params)
     snapshot_name = 'YunoHost'
-    if test:
-        snapshot_name = 'YunoHostest'
+    if branch is not "stable":
+        snapshot_name = 'YunoHost-%s' % branch
     result = r.json()
+    print result
     for image in result['images']:
         if image['name'] == snapshot_name:
             print('Snapshot found: '+ snapshot_name)
@@ -180,14 +185,12 @@ if os.path.exists( os.path.join(os.environ['HOME'], ".ssh", "known_hosts") ):
 if image_id == image_id_Debian_7_0_x64:
     command_list = [
             'echo "root:M3ryOPF.AfR2E" | chpasswd -e', # Change root password to "yunohost"
-            'git clone http://github.com/YunoHost/install_script /root/install_script'
+            'git clone http://github.com/YunoHost/install_script /root/install_script',
+            'cd /root/install_script && git checkout update-repo-url'
     ]
     command_list.append('apt-get update && apt-get upgrade -qq -y')
-    if test:
-        command_list.append('cd /root/install_script && ./autoinstall_yunohostv2 test')
-    else:
-        command_list.append('cd /root/install_script && ./autoinstall_yunohostv2')
-
+    command_list.append('cd /root/install_script && ./autoinstall_yunohostv2 branch')
+    
     print('Installing YunoHost on your droplet, it WILL take a while')
     for command in command_list:
         command_result = os.system('ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "root@'+ ip +'" "export TERM=linux; '+ command +'"')
