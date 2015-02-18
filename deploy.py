@@ -7,7 +7,7 @@ import requests
 import time
 import json
 
-image_id_Debian_7_0_x64 = 6372526
+image_id_Debian_7_0_x64 = 10322059
 
 size_id = 66                         # 512MB RAM
 region_id = 9                        # AMS 3
