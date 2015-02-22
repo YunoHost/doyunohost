@@ -91,7 +91,16 @@ for key, arg in enumerate(sys.argv):
     if arg == '--ssh-key-name':
         ssh_key_name = sys.argv[key+1]
     if arg == '--branch':
-        branch = sys.argv[key+1]
+        branch_arg = sys.argv[key+1]
+        if branch_arg == 'stable':
+          branch = 'stable'
+        else if branch_arg == 'testing' or branch_arg == 'test' :
+          branch = 'testing'
+        else if branch_arg == 'unstable' or branch_arg == 'daily' :
+          branch = 'unstable'
+        else:
+          print('Unknown branch argument : "%s" (must be "stable", "testing" or "unstable")' % (branch_arg))
+          sys.exit(1)
 
 if 'client_id' not in credentials or 'api_key' not in credentials:
   print('You have to provide a client ID and an API key')
