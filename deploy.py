@@ -36,7 +36,6 @@ deploy.py --domain <mydomain.nohost.me>  # Domain name (used as droplet name)
           [--api-key <my_api_key>]       # DO API key
           [--ssh-key-name <ssh_key>]     # Use SSH key based authentication, with the specific key
           [--password <my_password>]     # Admin password (auto-execute post-installation if set)
-          [--test]                       # Install from test repository
           [--no-snapshot]                # Do not snapshot after installation nor recover from snapshot
           [--update-snapshot]            # Force fresh install and snapshot
           [--branch <stable|testing|unstable>] # Which Yunohost flavor to install (default : stable)
@@ -49,7 +48,6 @@ You have to provide your client ID and corresponding API key :
     sys.exit(1)
 
 api_url = 'https://api.digitalocean.com/v1'
-test = '--test' in sys.argv
 snapshot = '--no-snapshot' not in sys.argv
 update_snapshot = '--update-snapshot' in sys.argv
 postinstall = False
@@ -111,7 +109,6 @@ if snapshot or update_snapshot:
     if branch is not "stable":
         snapshot_name = 'YunoHost-%s' % branch
     result = r.json()
-    print result
     for image in result['images']:
         if image['name'] == snapshot_name:
             print('Snapshot found: '+ snapshot_name)
@@ -171,11 +168,25 @@ while True:
     result = r.json()
     if result['droplet']['status'] == 'active':
         ip = result['droplet']['ip_address']
-        time.sleep(20)
-        if "ssh_key_ids" in params:
-            # wait another 30 sec
-            time.sleep(30)
+        sys.stdout.write('\n')
+        sys.stdout.flush()
         break
+
+# Now wait until we succeed to connect via ssh
+if "ssh_key_ids" in params:
+   sys.stdout.write('Waiting for SSH connection to be active, it may take a while...')
+   sys.stdout.flush()
+   while True:
+     command_result = os.system('ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "root@'+ ip +'" "export TERM=linux; echo Connection Successful"')
+     if command_result == 0:
+       sys.stdout.write('\n')
+       sys.stdout.flush()
+       break
+     else:
+       sys.stdout.write('.')
+       sys.stdout.flush()
+       # wait another 10 sec
+       time.sleep(10)
 
 print(' Droplet IP: '+ ip)
 
@@ -185,12 +196,12 @@ if os.path.exists( os.path.join(os.environ['HOME'], ".ssh", "known_hosts") ):
 if image_id == image_id_Debian_7_0_x64:
     command_list = [
             'echo "root:M3ryOPF.AfR2E" | chpasswd -e', # Change root password to "yunohost"
+            'apt-get update && apt-get upgrade -qq -y',
+            'apt-get install git',
             'git clone http://github.com/YunoHost/install_script /root/install_script',
-            'cd /root/install_script && git checkout update-repo-url'
+            'cd /root/install_script && ./autoinstall_yunohostv2 %s' % branch
     ]
-    command_list.append('apt-get update && apt-get upgrade -qq -y')
-    command_list.append('cd /root/install_script && ./autoinstall_yunohostv2 branch')
-    
+
     print('Installing YunoHost on your droplet, it WILL take a while')
     for command in command_list:
         command_result = os.system('ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "root@'+ ip +'" "export TERM=linux; '+ command +'"')
@@ -215,8 +226,8 @@ if snapshot and image_id == image_id_Debian_7_0_x64:
     print(' Droplet off')
     params = credentials
     params['name'] = 'YunoHost'
-    if test:
-        params['name'] = 'YunoHostest'
+    if branch:
+        params['name'] = 'YunoHost-%s' % branch
     sys.stdout.write('Snapshooting your droplet, it may take a while...')
     sys.stdout.flush()
     requests.get(api_url +'/droplets/'+ droplet +'/snapshot', params=params)
