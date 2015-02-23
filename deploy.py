@@ -94,9 +94,9 @@ for key, arg in enumerate(sys.argv):
         branch_arg = sys.argv[key+1]
         if branch_arg == 'stable':
           branch = 'stable'
-        else if branch_arg == 'testing' or branch_arg == 'test' :
+        elif branch_arg == 'testing' or branch_arg == 'test' :
           branch = 'testing'
-        else if branch_arg == 'unstable' or branch_arg == 'daily' :
+        elif branch_arg == 'unstable' or branch_arg == 'daily' :
           branch = 'unstable'
         else:
           print('Unknown branch argument : "%s" (must be "stable", "testing" or "unstable")' % (branch_arg))
