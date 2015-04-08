@@ -72,7 +72,7 @@ if os.path.exists( localconfig ):
     credentials["client_id"] = config["client_id"]
     credentials["api_key"] = config["api_key"]
     print( 'Successfully loaded credentials from %s' % (localconfig) )
-    
+
     if 'ssh_key' in config:
       ssh_key_name = config["ssh_key"]
       print( 'Successfully loaded SSH key %s from %s' % (ssh_key_name, localconfig) )
@@ -207,6 +207,7 @@ if image_id == image_id_Debian_7_0_x64:
             'echo "root:M3ryOPF.AfR2E" | chpasswd -e', # Change root password to "yunohost"
             'apt-get update && apt-get upgrade -qq -y',
             'apt-get install git',
+            'export SUDO_FORCE_REMOVE=yes',
             'git clone http://github.com/YunoHost/install_script /root/install_script',
             'cd /root/install_script && ./autoinstall_yunohostv2 %s' % branch
     ]
@@ -256,7 +257,7 @@ postinst_command_list = []
 
 if postinstall:
     print(' Proceeding with YunoHost postinstall...')
-    
+
     postinst_command_list.append('apt-get update && apt-get upgrade -qq -y')
     postinst_command_list.append('yunohost tools postinstall --domain '+ domain +' --password '+ password)
 
